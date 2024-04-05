@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TodoForm from "./TodoForm";
 import {
   RiCloseCircleLine,
@@ -6,6 +6,7 @@ import {
   RiArrowDownCircleLine,
 } from "react-icons/ri";
 import { TiEdit } from "react-icons/ti";
+import axios from "axios";
 
 const Todo = ({
   todos,
@@ -32,7 +33,6 @@ const Todo = ({
   }
 
   return todos.map((todo, index) => (
-    // <div>
     <div
       className={todo.isComplete ? "todo-row complete" : "todo-row"}
       key={index}
@@ -43,7 +43,7 @@ const Todo = ({
           onClick={() => completeTodo(todo.id)}
           className="todo"
         >
-          {todo.text}
+          {todo.title}
         </div>
         <div className="icons">
           <RiCheckboxCircleLine
@@ -62,7 +62,7 @@ const Todo = ({
             onClick={() =>
               setEdit({
                 id: todo.id,
-                value: todo.text,
+                value: todo.title,
                 description: todo.description,
               })
             }
@@ -76,7 +76,6 @@ const Todo = ({
         </div>
       )}
     </div>
-    // </div>
   ));
 };
 

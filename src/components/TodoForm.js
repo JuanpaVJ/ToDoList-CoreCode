@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { BsArrowDown, BsPlusCircleFill } from "react-icons/bs";
 import { RiCheckboxCircleLine } from "react-icons/ri";
-
+import axios from "axios";
 function TodoForm(props) {
   const [input, setInput] = useState(props.edit ? props.edit.value : "");
   const [showDescription, setShowDescription] = useState(false);
@@ -23,30 +23,38 @@ function TodoForm(props) {
     e.preventDefault();
     setShowDescription(!showDescription);
   };
-
-  const handleSubmit = (e) => {
+  const addTask = async (e) => {
     e.preventDefault();
-
-    props.onSubmit({
-      id: Math.floor(Math.random() * 10000),
-      text: input,
-      description,
-      isDone: false,
-      showDescription: false,
-    });
-    setInput("");
-    setDescription("");
+    try {
+      let newTask = {
+        title: e.currentTarget.title.value,
+        description: showDescription ? e.currentTarget.description.value : "",
+      };
+      if (!newTask.title || /^\s*$/.test(newTask.title)) {
+        return;
+      }
+      const res = await axios.post(
+        "http://localhost:3000/create_task",
+        newTask
+      );
+      const listRes = await axios.get("http://localhost:3000/all_tasks");
+      props.onSubmit(listRes.data);
+      setInput("");
+      setDescription("");
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="todo-form">
+    <form onSubmit={addTask} className="todo-form">
       {props.edit ? (
         <div className="todo-form--update">
           <input
             placeholder="Update your item"
             value={input}
             onChange={handleChange}
-            name="text"
+            name="title"
             ref={inputRef}
             className="todo-input edit todo-description"
           />
@@ -58,7 +66,7 @@ function TodoForm(props) {
             className="todo-input todo-description"
           />
 
-          <button onClick={handleSubmit} className="todo-button">
+          <button type="submit" className="todo-button">
             <RiCheckboxCircleLine />
           </button>
         </div>
@@ -68,14 +76,14 @@ function TodoForm(props) {
             placeholder="Add a todo"
             value={input}
             onChange={handleChange}
-            name="text"
+            name="title"
             className="todo-input"
             ref={inputRef}
           />
           <button onClick={handleDescription} className="todo-button edit">
             <BsArrowDown />
           </button>
-          <button onClick={handleSubmit} className="todo-button">
+          <button type="submit" className="todo-button">
             <BsPlusCircleFill />
           </button>
           {showDescription && (

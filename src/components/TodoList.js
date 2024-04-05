@@ -1,24 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TodoForm from "./TodoForm";
 import Todo from "./Todo";
-import { useEffect } from "react";
+import axios from "axios";
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    console.log(todos);
-  }, [todos]);
+    const allTasks = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/all_tasks");
+        setTodos(res.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    allTasks();
+  }, []);
 
-  const addTodo = (todo) => {
-    if (!todo.text || /^\s*$/.test(todo.text)) {
-      return;
-    }
-
-    const newTodos = [todo, ...todos];
+  const addTodo = async (todos) => {
+    const newTodos = [...todos];
 
     setTodos(newTodos);
-    console.log(...todos);
   };
 
   const showDescription = (todoId) => {
