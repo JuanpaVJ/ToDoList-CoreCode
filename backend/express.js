@@ -6,6 +6,7 @@ const {
   create_task,
   delete_task,
   edit_task,
+  update_status,
 } = require("./database");
 app.use(express.json());
 app.use(cors());
@@ -37,7 +38,7 @@ app.post("/create_task", (req, res) => {
       return res.status(500).send({ code: 1, message: "Error creating task" });
     }
 
-    console.log("Task created successfully!");
+    console.log("Task created successfully");
     res.send({ code: 0, message: "Task created successfully" });
   });
 });
@@ -61,7 +62,7 @@ app.put("/edit_task/:id", (req, res) => {
   const id = req.params.id;
   const { title, description } = req.body;
 
-  edit_task(id, title, description, (err, changes) => {
+  edit_task(id, title, description, (err) => {
     if (err) {
       return res.status(500).send({
         code: 1,
@@ -70,6 +71,21 @@ app.put("/edit_task/:id", (req, res) => {
     }
 
     res.send({ code: 0, message: "Task edited successfully" });
+  });
+});
+
+// *Update status
+app.put("/edit_status/:id", (req, res) => {
+  const id = req.params.id;
+  const { status } = req.body;
+  update_status(id, status, (err) => {
+    if (err) {
+      console.error(err);
+      return res
+        .status(500)
+        .send({ code: 1, message: "Error changing status of task" });
+    }
+    res.send({ code: 0, message: `Status changed of task ${id}` });
   });
 });
 

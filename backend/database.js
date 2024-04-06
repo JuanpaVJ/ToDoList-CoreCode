@@ -77,4 +77,29 @@ const edit_task = (id, title, description, callback) => {
   stmt.finalize();
 };
 
-module.exports = { get_tasks, create_task, delete_task, edit_task };
+const update_status = (id, status, callback) => {
+  const stmt = db.prepare(`
+    UPDATE tasks SET status = ? WHERE id = ?
+  `);
+  stmt.bind([status, id]);
+
+  stmt.run((err) => {
+    if (err) {
+      callback(new Error("Error updating status", err));
+    } else {
+      callback(null);
+    }
+  });
+};
+
+const deleteColumn = () => {
+  
+}
+
+module.exports = {
+  get_tasks,
+  create_task,
+  delete_task,
+  edit_task,
+  update_status,
+};

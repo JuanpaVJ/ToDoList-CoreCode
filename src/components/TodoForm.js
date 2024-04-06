@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { BsArrowDown, BsPlusCircleFill } from "react-icons/bs";
 import { RiCheckboxCircleLine } from "react-icons/ri";
 import axios from "axios";
+import { Toaster, toast } from "sonner";
+import { CiWarning } from "react-icons/ci";
+import { FaCheck } from "react-icons/fa";
+
 function TodoForm(props) {
   const [input, setInput] = useState(props.edit ? props.edit.value : "");
   const [showDescription, setShowDescription] = useState(false);
@@ -23,6 +27,28 @@ function TodoForm(props) {
     e.preventDefault();
     setShowDescription(!showDescription);
   };
+
+  const task_edited = () => {
+    toast("Task edited successfully", {
+      duration: 4000,
+      icon: <FaCheck size={"1.5em"} />,
+    });
+  };
+
+  const missingCamps = () => {
+    toast("The task must have a title", {
+      duration: 4000,
+      icon: <CiWarning size={"1.5em"} />,
+    });
+  };
+
+  const taskCreated = () => {
+    toast("Task created successfully", {
+      duration: 4000,
+      icon: <FaCheck size={"1.5em"} />,
+    });
+  };
+
   const addTask = async (e) => {
     e.preventDefault();
     try {
@@ -31,7 +57,7 @@ function TodoForm(props) {
         description: showDescription ? e.currentTarget.description.value : "",
       };
       if (!newTask.title || /^\s*$/.test(newTask.title)) {
-        return;
+        missingCamps();
       }
       const res = await axios.post(
         "http://localhost:3000/create_task",
@@ -41,37 +67,41 @@ function TodoForm(props) {
       props.onSubmit(listRes.data);
       setInput("");
       setDescription("");
+      taskCreated();
     } catch (e) {
       console.error(e);
     }
   };
 
   return (
-    <form onSubmit={addTask} className="todo-form">
+    <>
+      <Toaster position="top-right" />
       {props.edit ? (
-        <div className="todo-form--update">
-          <input
-            placeholder="Update your item"
-            value={input}
-            onChange={handleChange}
-            name="title"
-            ref={inputRef}
-            className="todo-input edit todo-description"
-          />
-          <textarea
-            placeholder="Description"
-            value={description}
-            onChange={handleDescriptionChange}
-            name="description"
-            className="todo-input todo-description"
-          />
+        <form className="todo-form">
+          <div className="todo-form--update">
+            <input
+              placeholder="Update your item"
+              value={input}
+              onChange={handleChange}
+              name="title"
+              ref={inputRef}
+              className="todo-input edit todo-description"
+            />
+            <textarea
+              placeholder="Description"
+              value={description}
+              onChange={handleDescriptionChange}
+              name="description"
+              className="todo-input todo-description"
+            />
 
-          <button type="submit" className="todo-button">
-            <RiCheckboxCircleLine />
-          </button>
-        </div>
+            <button className="todo-button">
+              <RiCheckboxCircleLine size={"2em"}/>
+            </button>
+          </div>
+        </form>
       ) : (
-        <>
+        <form onSubmit={addTask}>
           <input
             placeholder="Add a todo"
             value={input}
@@ -95,9 +125,9 @@ function TodoForm(props) {
               className="todo-input todo-description"
             />
           )}
-        </>
+        </form>
       )}
-    </form>
+    </>
   );
 }
 
