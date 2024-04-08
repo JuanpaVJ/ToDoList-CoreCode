@@ -67,7 +67,6 @@ function TodoForm(props) {
   };
 
   const updateTask = async (e) => {
-    e.preventDefault();
     try {
       const body = {
         id: props.edit.id,
