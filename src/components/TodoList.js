@@ -13,7 +13,6 @@ function TodoList() {
       try {
         const res = await axios.get("http://localhost:3000/all_tasks");
         setTodos(res.data);
-        console.log(res.data);
       } catch (e) {
         console.error(e);
       }
@@ -39,7 +38,10 @@ function TodoList() {
 
   const updateTodo = (todoId, newValue) => {
     if (!newValue.title || /^\s*$/.test(newValue.title)) {
-      return;
+      toast("Please fill the required camps", {
+        duration: 4000,
+        icon: <CiWarning size={"1.5em"} />,
+      });
     }
     setTodos((prev) =>
       prev.map((item) => (item.id === todoId ? newValue : item))

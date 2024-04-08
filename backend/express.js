@@ -61,17 +61,20 @@ app.delete("/delete_task/:id", (req, res) => {
 app.put("/edit_task/:id", (req, res) => {
   const id = req.params.id;
   const { title, description } = req.body;
-
-  edit_task(id, title, description, (err) => {
-    if (err) {
-      return res.status(500).send({
-        code: 1,
-        message: `Task with ID ${id} not found or no changes where made.`,
-      });
-    }
-
-    res.send({ code: 0, message: "Task edited successfully" });
-  });
+  try {
+    edit_task(title, description, id, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send({
+          code: 1,
+          message: `Task with ID ${id} not found or no changes where made.`,
+        });
+      }
+      res.status(200).send({ code: 0, message: "Task edited successfully" });
+    });
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 // *Update status

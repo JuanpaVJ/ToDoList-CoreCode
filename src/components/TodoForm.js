@@ -28,13 +28,6 @@ function TodoForm(props) {
     setShowDescription(!showDescription);
   };
 
-  const task_edited = () => {
-    toast("Task edited successfully", {
-      duration: 4000,
-      icon: <FaCheck size={"1.5em"} />,
-    });
-  };
-
   const missingCamps = () => {
     toast("The task must have a title", {
       duration: 4000,
@@ -73,17 +66,43 @@ function TodoForm(props) {
     }
   };
 
+  const updateTask = async (e) => {
+    e.preventDefault();
+    try {
+      const body = {
+        id: props.edit.id,
+        title: e.currentTarget.title_edit.value,
+        description: e.currentTarget.description_edit.value,
+      };
+      console.log(body);
+      const res = await axios.put(
+        `http://localhost:3000/edit_task/${props.edit.id}`,
+        body
+      );
+      toast("Task edited successfully", {
+        duration: 4000,
+        icon: <FaCheck size={"1.5em"} />,
+      });
+    } catch (e) {
+      console.error(e);
+      toast("Error updating task.", {
+        duration: 4000,
+        icon: <CiWarning size={"1.5em"} />,
+      });
+    }
+  };
+
   return (
     <>
       <Toaster position="top-right" />
       {props.edit ? (
-        <form className="todo-form">
+        <form onSubmit={updateTask} className="todo-form">
           <div className="todo-form--update">
             <input
               placeholder="Update your item"
               value={input}
               onChange={handleChange}
-              name="title"
+              name="title_edit"
               ref={inputRef}
               className="todo-input edit todo-description"
             />
@@ -91,12 +110,12 @@ function TodoForm(props) {
               placeholder="Description"
               value={description}
               onChange={handleDescriptionChange}
-              name="description"
+              name="description_edit"
               className="todo-input todo-description"
             />
 
             <button className="todo-button">
-              <RiCheckboxCircleLine size={"2em"}/>
+              <RiCheckboxCircleLine size={"2em"} />
             </button>
           </div>
         </form>

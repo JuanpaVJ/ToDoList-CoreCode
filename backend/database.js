@@ -54,7 +54,7 @@ const delete_task = (id, callback) => {
   stmt.finalize();
 };
 
-const edit_task = (id, title, description, callback) => {
+const edit_task = (title, description, id, callback) => {
   const stmt = db.prepare(
     "UPDATE tasks SET title = ?, description = ? WHERE id = ?"
   );
@@ -62,13 +62,10 @@ const edit_task = (id, title, description, callback) => {
 
   stmt.run((err) => {
     if (err) {
-      callback(err);
+      callback(new Error(`Error editing task: ${err.message}`));
     } else {
       if (stmt.changes === 0) {
-        console.warn(`Task with ID ${id} not found or no changes where made.`);
-        callback(
-          new Error(`Task with ID ${id} not found or no changes where made.`)
-        );
+        callback(new Error(`Task with ID ${id} not found`));
       } else {
         callback(null);
       }
@@ -91,10 +88,6 @@ const update_status = (id, status, callback) => {
     }
   });
 };
-
-const deleteColumn = () => {
-  
-}
 
 module.exports = {
   get_tasks,

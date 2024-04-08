@@ -29,6 +29,7 @@ const Todo = ({
   };
 
   if (edit.id) {
+    console.log(edit.id);
     return <TodoForm edit={edit} onSubmit={submitUpdate} />;
   }
 
